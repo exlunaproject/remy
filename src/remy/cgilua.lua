@@ -1,0 +1,83 @@
+-- Copyright (c) 2014 Felipe Daragon
+-- License: MIT
+
+-- TODO: implement all functions from mod_lua's request_rec
+local request = {
+	-- ENCODING/DECODING FUNCTIONS
+	escape = function(_,...) return cgilua.urlcode.escape(...) end,
+	unescape = function(_,...) return cgilua.urlcode.unescape(...) end,
+	-- REQUEST PARSING FUNCTIONS
+	parseargs = function(_) return cgilua.QUERY, {} end,
+	parsebody = function(_) return cgilua.POST, {} end,
+	-- REQUEST RESPONSE FUNCTIONS
+	puts = function(_,...) cgilua.put(...) end,
+	write = function(_,...) cgilua.print(...) end
+}
+
+function remy.initmode()
+	apache2 = remy.apache2
+	apache2.version = cgilua.servervariable("SERVER_SOFTWARE")
+	remy.mode = "cgilua"
+	remy.request = request
+	remy.updaterequest()
+end
+
+function remy.updaterequest()
+	local r = request
+	local query = cgilua.servervariable("QUERY_STRING")
+	local port = cgilua.servervariable("SERVER_PORT")
+	local server_name = cgilua.servervariable("SERVER_NAME")
+	r = remy.loadrequestrec(r)
+	r.ap_auth_type = cgilua.servervariable("AUTH_TYPE")
+	if query ~= '' then
+		r.args = query
+	end
+	r.banner = cgilua.servervariable("SERVER_SOFTWARE")
+	r.canonical_filename = cgilua.script_path
+	r.content_type = "text/html" -- CGILua needs a default content_type
+	r.context_document_root = cgilua.script_pdir
+	r.document_root = cgilua.script_pdir
+	r.filename = cgilua.script_path
+	r.hostname = server_name
+	r.method = cgilua.servervariable("REQUEST_METHOD")
+	r.path_info = cgilua.servervariable("PATH_INFO")
+	if port ~= nil then
+		r.port = tonumber(port)
+		if r.port == 443 then
+			r.is_https = true
+		end
+	end
+	r.protocol = cgilua.servervariable("SERVER_PROTOCOL")
+	r.range = cgilua.servervariable("HTTP_RANGE")
+	r.server_name = server_name
+	r.started = os.time()
+	r.the_request = r.method..' '..remy.getunparseduri()..' '..r.protocol
+	r.unparsed_uri = remy.getunparseduri()
+	r.uri = r.path_info
+	r.user = cgilua.servervariable("REMOTE_USER")
+	r.useragent_ip = cgilua.servervariable("REMOTE_ADDR")
+end
+
+function remy.getunparseduri()
+	local uri = cgilua.servervariable("PATH_INFO")
+	local query = cgilua.servervariable("QUERY_STRING")
+	if query ~= '' then
+		uri = uri..'?'..query
+	end
+	return uri
+end
+
+function remy.contentheader(content_type)
+	if content_type == "text/html" then
+		cgilua.htmlheader()
+	else
+		local header_sep = "/"
+		local header_type = remy.splitstring(content_type,header_sep)[1]
+		local header_subtype = remy.splitstring(content_type,header_sep)[2]
+		cgilua.contentheader(header_type,header_subtype)
+	end
+end
+
+-- TODO: handle the return code in CGILua
+function remy.finish(code)
+end
