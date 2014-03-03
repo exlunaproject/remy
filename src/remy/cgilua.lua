@@ -1,3 +1,4 @@
+-- Remy - CGI-Lua compatibility
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT
 
@@ -27,10 +28,11 @@ function remy.updaterequest()
 	local query = cgilua.servervariable("QUERY_STRING")
 	local port = cgilua.servervariable("SERVER_PORT")
 	local server_name = cgilua.servervariable("SERVER_NAME")
+	local path_info = remy.getpathinfo()
 	r = remy.loadrequestrec(r)
 	r.ap_auth_type = cgilua.servervariable("AUTH_TYPE")
-	if query ~= '' then
-		r.args = query
+	if query ~= nil and query ~= '' then
+ 		r.args = query
 	end
 	r.banner = cgilua.servervariable("SERVER_SOFTWARE")
 	r.canonical_filename = cgilua.script_path
@@ -40,7 +42,7 @@ function remy.updaterequest()
 	r.filename = cgilua.script_path
 	r.hostname = server_name
 	r.method = cgilua.servervariable("REQUEST_METHOD")
-	r.path_info = cgilua.servervariable("PATH_INFO")
+	r.path_info = path_info
 	if port ~= nil then
 		r.port = tonumber(port)
 		if r.port == 443 then
@@ -53,15 +55,23 @@ function remy.updaterequest()
 	r.started = os.time()
 	r.the_request = r.method..' '..remy.getunparseduri()..' '..r.protocol
 	r.unparsed_uri = remy.getunparseduri()
-	r.uri = r.path_info
+	r.uri = path_info
 	r.user = cgilua.servervariable("REMOTE_USER")
 	r.useragent_ip = cgilua.servervariable("REMOTE_ADDR")
 end
 
+function remy.getpathinfo()
+	local p = cgilua.servervariable("PATH_INFO")
+  if p == nil then
+    p = cgilua.servervariable("SCRIPT_NAME")
+  end
+  return p
+end
+
 function remy.getunparseduri()
-	local uri = cgilua.servervariable("PATH_INFO")
+	local uri = remy.getpathinfo()
 	local query = cgilua.servervariable("QUERY_STRING")
-	if query ~= '' then
+	if query ~= nil and query ~= '' then
 		uri = uri..'?'..query
 	end
 	return uri

@@ -1,4 +1,4 @@
--- Remy 0.1
+-- Remy 0.1b
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --

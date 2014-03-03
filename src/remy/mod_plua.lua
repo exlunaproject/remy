@@ -1,3 +1,4 @@
+-- Remy - mod_pLua compatibility
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT
 
