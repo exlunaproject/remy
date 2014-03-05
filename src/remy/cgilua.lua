@@ -15,26 +15,24 @@ local request = {
 	write = function(_,...) cgilua.print(...) end
 }
 
-function remy.initmode()
-	apache2 = remy.apache2
-	apache2.version = cgilua.servervariable("SERVER_SOFTWARE")
-	remy.mode = "cgilua"
-	remy.request = request
-	remy.updaterequest()
-end
+local M = {
+  mode = "cgilua",
+  request = request
+}
 
-function remy.updaterequest()
+function M.init()
 	local r = request
 	local query = cgilua.servervariable("QUERY_STRING")
 	local port = cgilua.servervariable("SERVER_PORT")
 	local server_name = cgilua.servervariable("SERVER_NAME")
-	local path_info = remy.getpathinfo()
+	local path_info = M.getpathinfo()
+	apache2.version = cgilua.servervariable("SERVER_SOFTWARE")
 	r = remy.loadrequestrec(r)
 	r.ap_auth_type = cgilua.servervariable("AUTH_TYPE")
 	if query ~= nil and query ~= '' then
  		r.args = query
 	end
-	r.banner = cgilua.servervariable("SERVER_SOFTWARE")
+	r.banner = apache2.version
 	r.canonical_filename = cgilua.script_path
 	r.content_type = "text/html" -- CGILua needs a default content_type
 	r.context_document_root = cgilua.script_pdir
@@ -53,14 +51,14 @@ function remy.updaterequest()
 	r.range = cgilua.servervariable("HTTP_RANGE")
 	r.server_name = server_name
 	r.started = os.time()
-	r.the_request = r.method..' '..remy.getunparseduri()..' '..r.protocol
-	r.unparsed_uri = remy.getunparseduri()
+	r.the_request = r.method..' '..M.getunparseduri()..' '..r.protocol
+	r.unparsed_uri = M.getunparseduri()
 	r.uri = path_info
 	r.user = cgilua.servervariable("REMOTE_USER")
 	r.useragent_ip = cgilua.servervariable("REMOTE_ADDR")
 end
 
-function remy.getpathinfo()
+function M.getpathinfo()
 	local p = cgilua.servervariable("PATH_INFO")
   if p == nil then
     p = cgilua.servervariable("SCRIPT_NAME")
@@ -68,8 +66,8 @@ function remy.getpathinfo()
   return p
 end
 
-function remy.getunparseduri()
-	local uri = remy.getpathinfo()
+function M.getunparseduri()
+	local uri = M.getpathinfo()
 	local query = cgilua.servervariable("QUERY_STRING")
 	if query ~= nil and query ~= '' then
 		uri = uri..'?'..query
@@ -77,7 +75,7 @@ function remy.getunparseduri()
 	return uri
 end
 
-function remy.contentheader(content_type)
+function M.contentheader(content_type)
 	if content_type == "text/html" then
 		cgilua.htmlheader()
 	else
@@ -89,5 +87,7 @@ function remy.contentheader(content_type)
 end
 
 -- TODO: handle the return code in CGILua
-function remy.finish(code)
+function M.finish(code)
 end
+
+return M

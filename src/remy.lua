@@ -1,17 +1,17 @@
--- Remy 0.1b
+-- Remy 0.2
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --
--- Remy runs web applications built for mod_lua in different
--- environments like mod_pLua or CGILua, which can work with other web 
--- servers than Apache. The goal is to support and emulate the mod_lua
--- API, including the request_rec structure, its built-in functions and
--- other required functionality.
+-- Remy runs web applications built for mod_lua in different web server
+-- environments, such as: a non-Apache server with CGILua, or an Apache
+-- server with mod_pLua or CGILua instead of the mod_lua module.
 
 remy = {
 	MODE_CGILUA = 0,
 	MODE_MOD_PLUA = 1
 }
+
+local emu = {}
 
 -- The values below will be updated during runtime
 remy.config = {
@@ -95,11 +95,17 @@ function remy.init(mode)
 		mode = remy.detect()
 	end
 	if mode == remy.MODE_CGILUA then
-		require "remy.cgilua"
+		emu = require "remy.cgilua"
 	elseif mode == remy.MODE_MOD_PLUA then
-		require "remy.mod_plua"
+		emu = require "remy.mod_plua"
 	end
-	remy.initmode()
+	apache2 = remy.apache2
+	emu.init()
+end
+
+-- Sets the value of the Content Type header field
+function remy.contentheader(content_type)
+  emu.contentheader(content_type)
 end
 
 -- Detects the Lua environment
@@ -116,15 +122,21 @@ function remy.detect()
 	return mode
 end
 
-function remy.run(handle)
-	local code = handle(remy.request)
-	remy.finish(code)
+-- Handles the return code
+function remy.finish(code)
+  emu.finish(code)
 end
 
 -- Load the default request_rec fields
 function remy.loadrequestrec(r)
 	for k,v in pairs(request_rec_fields) do r[k] = v end
 	return r
+end
+
+-- Runs the mod_lua handle function
+function remy.run(handlefunc)
+	local code = handlefunc(emu.request)
+	remy.finish(code)
 end
 
 function remy.splitstring(s, delimiter)
