@@ -2,9 +2,13 @@
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT
 
+require "base64"
+
 -- TODO: implement all functions from mod_lua's request_rec
 local request = {
 	-- ENCODING/DECODING FUNCTIONS
+	base64_decode = function(_,...) return base64.decode(...) end,
+	base64_encode = function(_,...) return base64.encode(...) end,
 	escape = function(_,...) return cgilua.urlcode.escape(...) end,
 	unescape = function(_,...) return cgilua.urlcode.unescape(...) end,
 	-- REQUEST PARSING FUNCTIONS
