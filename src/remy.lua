@@ -1,4 +1,4 @@
--- Remy 0.2.1
+-- Remy 0.2.3
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --
@@ -20,8 +20,8 @@ remy.config = {
 	uri = "/index.lua"
 }
 
--- apache2 Package constants
-remy.apache2 = {
+-- HTTPd Package constants
+remy.httpd = {
 	-- Internal constants from include/httpd.h
 	OK = 0,
 	DECLINED = -1,
@@ -99,7 +99,7 @@ function remy.init(mode)
 	elseif mode == remy.MODE_MOD_PLUA then
 		emu = require "remy.mod_plua"
 	end
-	apache2 = remy.apache2
+	apache2 = remy.httpd
 	emu.init()
 end
 
