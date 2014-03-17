@@ -6,13 +6,11 @@ This is a work in progress. Remy is already able to run Sailor (https://github.c
 
 ## Supported Environments #
 
-* Any web server with CGILua https://github.com/keplerproject/cgilua
- * Tested with:
-  * Apache with CGILua
-  * Civetweb https://github.com/sunsetbrew/civetweb
-  * Mongoose https://github.com/cesanta/mongoose
- * Untested:
-  * IIS
+* Any web server with CGILua https://github.com/keplerproject/cgilua Tested with:
+ * Apache with CGILua
+ * Civetweb https://github.com/sunsetbrew/civetweb
+ * Mongoose https://github.com/cesanta/mongoose
+ * Untested: IIS
 * Apache with mod_lua http://www.modlua.org/
 * Apache with mod_plua https://github.com/Humbedooh/mod_pLua
 * Nginx with ngx_lua (HttpLuaModule) https://github.com/nginx/nginx
