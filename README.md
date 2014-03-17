@@ -1,10 +1,25 @@
 # Remy #
 
-Remy runs web applications built for mod_lua in different environments like mod_pLua or CGILua, which can work with other web servers than Apache. The goal is to support and emulate the mod_lua API, including the request_rec structure, its built-in functions and other required functionality.
+This project started as a simple mod_lua emulator, allowing to run web applications built for mod_lua in alternative environments that allow to run server-side Lua code. As such, it is able to support and emulate the mod_lua API, including the request_rec structure and some of its built-in functions. Currently it is being refactored to work as both an abstract wrapper to several alternative web server environments and a mod_lua emulator.
 
-This is a work in progress. Remy is already able to run Sailor (https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua.
+This is a work in progress. Remy is already able to run Sailor (https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua in the environments listed below.
 
-See the examples/sailor folder for sample code.
+## Supported Environments #
+
+* Any web server with CGILua https://github.com/keplerproject/cgilua
+ * Tested with:
+  * Apache with CGILua
+  * Civetweb https://github.com/sunsetbrew/civetweb
+  * Mongoose https://github.com/cesanta/mongoose
+ * Untested:
+  * IIS
+* Apache with mod_lua http://www.modlua.org/
+* Apache with mod_plua https://github.com/Humbedooh/mod_pLua
+* Nginx with ngx_lua (HttpLuaModule) https://github.com/nginx/nginx
+
+## Planned Environments #
+
+* Lighttpd
 
 ## Usage #
 
