@@ -57,6 +57,7 @@ end
 
 function M.contentheader(content_type)
 	request.content_type = content_type
+	ngx.header.content_type = content_type
 end
 
 function M.finish(code)
