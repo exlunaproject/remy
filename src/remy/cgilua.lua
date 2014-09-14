@@ -63,7 +63,8 @@ function M.init()
 end
 
 function M.getpathinfo()
-	local p = cgilua.servervariable("PATH_INFO")
+  local p = cgilua.urlpath -- Xavante compatibility fix (Etiene)
+	--local p = cgilua.servervariable("PATH_INFO")
   if p == nil then
     p = cgilua.servervariable("SCRIPT_NAME")
   end
