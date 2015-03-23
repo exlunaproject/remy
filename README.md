@@ -1,8 +1,8 @@
 # Remy #
 
-This project started as a simple mod_lua emulator, allowing to run web applications built for mod_lua in alternative environments that allow to run server-side Lua code. As such, it is able to support and emulate the mod_lua API, including the request_rec structure and some of its built-in functions. Currently it is being refactored to work both as an abstract wrapper to several alternative web server environments and as a mod_lua emulator.
+This project started as a simple mod_lua emulator, allowing to run web applications built for mod_lua in alternative environments that allow to run server-side Lua code. As such, it is able to support and emulate the mod_lua API, including the request_rec structure and some of its built-in functions.
 
-This is a work in progress, not suitable for production environments yet. Remy is already able to run Sailor (https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua in the environments listed below.
+This is a work in progress, an may not be suitable for production environments yet. Remy is already able to run Sailor (https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua in the environments listed below.
 
 ## Supported Environments #
 
@@ -13,11 +13,13 @@ This is a work in progress, not suitable for production environments yet. Remy i
  * Untested: IIS
 * Apache with mod_lua http://www.modlua.org/
 * Apache with mod_plua https://github.com/Humbedooh/mod_pLua
+* Lighttp with mod_magnet http://redmine.lighttpd.net/projects/1/wiki/Docs_ModMagnet
+* Lwan Web Server http://lwan.ws/
 * Nginx with ngx_lua (HttpLuaModule) https://github.com/nginx/nginx
 
 ## Planned Environments #
 
-* Lighttpd
+* IIS with LuaScript http://na-s.jp/LuaScript/
 
 ## Usage #
 
@@ -51,4 +53,4 @@ remy.run(handle)
 
 Remy is licensed under the MIT license (http://opensource.org/licenses/MIT)
 
-(c) Felipe Daragon, 2014
+(c) Felipe Daragon, 2014-2015

@@ -1,14 +1,17 @@
--- Remy 0.2.5
--- Copyright (c) 2014 Felipe Daragon
+-- Remy 0.2.8
+-- Copyright (c) 2014-2015 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --
 -- Remy runs Lua-based web applications in alternative web server
 -- environments that allow to run Lua code.
 
 remy = {
+	MODE_AUTODETECT = nil,
 	MODE_CGILUA = 0,
 	MODE_MOD_PLUA = 1,
-	MODE_NGINX = 2
+	MODE_NGINX = 2,
+	MODE_LWAN = 3,
+	MODE_LIGHTTPD = 4
 }
 
 local emu = {}
@@ -19,6 +22,8 @@ remy.config = {
 	hostname = "localhost",
 	uri = "/index.lua"
 }
+
+remy.responsetext = nil
 
 -- HTTPd Package constants
 remy.httpd = {
@@ -90,9 +95,10 @@ local request_rec_fields = {
 	useragent_ip = "127.0.0.1"
 }
 
-function remy.init(mode)
-	if mode == nil then
-		mode = remy.detect()
+function remy.init(mode, native_request)
+	remy.responsetext = nil
+	if mode == remy.MODE_AUTODETECT then
+		mode = remy.detect(native_request)
 	end
 	if mode == remy.MODE_CGILUA then
 		emu = require "remy.cgilua"
@@ -100,9 +106,14 @@ function remy.init(mode)
 		emu = require "remy.nginx"
 	elseif mode == remy.MODE_MOD_PLUA then
 		emu = require "remy.mod_plua"
+	elseif mode == remy.MODE_LIGHTTPD then
+		emu = require "remy.mod_magnet"
+	elseif mode == remy.MODE_LWAN then
+		emu = require "remy.lwan"
 	end
 	apache2 = remy.httpd
-	emu.init()
+	emu.init(native_request)
+	return mode
 end
 
 -- Sets the value of the Content Type header field
@@ -111,17 +122,21 @@ function remy.contentheader(content_type)
 end
 
 -- Detects the Lua environment
-function remy.detect()
+function remy.detect(native_request)
 	local mode = nil
 	if cgilua ~= nil then
 		mode = remy.MODE_CGILUA
-  elseif ngx ~= nil then
-    mode = remy.MODE_NGINX
+	elseif ngx ~= nil then
+		mode = remy.MODE_NGINX
 	elseif getEnv ~= nil then
 		local env = getEnv()
 		if env["pLua-Version"] ~= nil then
 			mode = remy.MODE_MOD_PLUA
 		end
+	elseif lighty ~= nil then
+		mode = remy.MODE_LIGHTTPD
+	elseif native_request ~= nil and type(native_request.query_param) == "function" then
+		mode = remy.MODE_LWAN
 	end
 	return mode
 end
@@ -137,6 +152,12 @@ function remy.loadrequestrec(r)
 	return r
 end
 
+-- Temporarily stores the printed content (needed by CGILua mode)
+function remy.print(str)
+  remy.responsetext = remy.responsetext or ""
+  remy.responsetext = remy.responsetext..str
+end
+
 -- Runs the mod_lua handle function
 function remy.run(handlefunc)
 	local code = handlefunc(emu.request)
@@ -144,9 +165,14 @@ function remy.run(handlefunc)
 end
 
 function remy.splitstring(s, delimiter)
-	result = {}
+	local result = {}
 	for match in (s..delimiter):gmatch("(.-)"..delimiter) do
 		table.insert(result, match)
 	end
 	return result
+end
+
+function remy.sha1(str)
+	local sha1 = require "sha1"
+	return sha1(str)
 end
