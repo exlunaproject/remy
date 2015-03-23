@@ -1,25 +1,27 @@
 # Remy #
 
-This project started as a simple mod_lua emulator, allowing to run web applications built for mod_lua in alternative environments that allow to run server-side Lua code. As such, it is able to support and emulate the mod_lua API, including the request_rec structure and some of its built-in functions.
+Remy (the R emulator) is a simple mod_lua emulator, allowing to run web applications built for mod_lua in alternative environments that allow to run server-side Lua code. As such, it is able to support and emulate the mod_lua API, the request_rec structure and some of its built-in functions.
 
-This is a work in progress, an may not be suitable for production environments yet. Remy is already able to run Sailor (https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua in the environments listed below.
+This is a work in progress, an may not be suitable for production environments yet.
+
+Remy was developed as part of [Sailor](https://github.com/Etiene/sailor), a Lua-based MVC framework which originally uses mod_lua, and is already able to run mod_lua apps in a variety of environments (listed below).
 
 ## Supported Environments #
 
-* Any web server with CGILua https://github.com/keplerproject/cgilua Tested with:
+* Any web server with [CGILua](https://github.com/keplerproject/cgilua) Tested with:
  * Apache
- * Civetweb https://github.com/sunsetbrew/civetweb
- * Mongoose https://github.com/cesanta/mongoose
+ * [Civetweb](https://github.com/bel2125/civetweb)
+ * [Mongoose](https://github.com/cesanta/mongoose)
  * Untested: IIS
-* Apache with mod_lua http://www.modlua.org/
-* Apache with mod_plua https://github.com/Humbedooh/mod_pLua
-* Lighttp with mod_magnet http://redmine.lighttpd.net/projects/1/wiki/Docs_ModMagnet
-* Lwan Web Server http://lwan.ws/
-* Nginx with ngx_lua (HttpLuaModule) https://github.com/nginx/nginx
+* Apache with [mod_lua](http://www.modlua.org/)
+* Apache with [mod_plua](https://github.com/Humbedooh/mod_pLua)
+* Lighttp with [mod_magnet](http://redmine.lighttpd.net/projects/1/wiki/Docs_ModMagnet)
+* [Lwan Web Server](http://lwan.ws/)
+* Nginx with [ngx_lua](https://github.com/nginx/nginx) (HttpLuaModule)
 
 ## Planned Environments #
 
-* IIS with LuaScript http://na-s.jp/LuaScript/
+* IIS with [LuaScript](http://na-s.jp/LuaScript/)
 
 ## Usage #
 
