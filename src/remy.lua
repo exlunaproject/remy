@@ -1,4 +1,4 @@
--- Remy 0.2.8
+-- Remy 0.2.9
 -- Copyright (c) 2014-2015 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --
