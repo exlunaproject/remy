@@ -26,8 +26,7 @@ Remy was developed as part of [Sailor](https://github.com/Etiene/sailor), a Lua-
 ## Usage #
 
 ``` lua
-require "remy"
-require "string"
+local remy = require "remy"
 
 function handle(r)
     r.content_type = "text/plain"

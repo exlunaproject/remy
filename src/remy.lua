@@ -1,11 +1,11 @@
--- Remy 0.2.9
+-- Remy 0.2.10
 -- Copyright (c) 2014-2015 Felipe Daragon
 -- License: MIT (http://opensource.org/licenses/mit-license.php)
 --
 -- Remy runs Lua-based web applications in alternative web server
 -- environments that allow to run Lua code.
 
-remy = {
+local remy = {
 	MODE_AUTODETECT = nil,
 	MODE_CGILUA = 0,
 	MODE_MOD_PLUA = 1,
@@ -13,6 +13,8 @@ remy = {
 	MODE_LWAN = 3,
 	MODE_LIGHTTPD = 4
 }
+
+local forced_mode = nil
 
 local emu = {}
 
@@ -124,6 +126,7 @@ end
 -- Detects the Lua environment
 function remy.detect(native_request)
 	local mode = nil
+	if forced_mode then return forced_mode end
 	if cgilua ~= nil then
 		mode = remy.MODE_CGILUA
 	elseif ngx ~= nil then
@@ -133,6 +136,7 @@ function remy.detect(native_request)
 		if env["pLua-Version"] ~= nil then
 			mode = remy.MODE_MOD_PLUA
 		end
+	-- Note: lighty is not a package so package.loaded.lighty ~= nil will not work
 	elseif lighty ~= nil then
 		mode = remy.MODE_LIGHTTPD
 	elseif native_request ~= nil and type(native_request.query_param) == "function" then
@@ -176,3 +180,5 @@ function remy.sha1(str)
 	local sha1 = require "sha1"
 	return sha1(str)
 end
+
+return remy
