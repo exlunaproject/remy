@@ -127,9 +127,9 @@ end
 function remy.detect(native_request)
 	local mode = nil
 	if forced_mode then return forced_mode end
-	if cgilua ~= nil then
+	if package.loaded.cgilua ~= nil then
 		mode = remy.MODE_CGILUA
-	elseif ngx ~= nil then
+	elseif package.loaded.ngx ~= nil then
 		mode = remy.MODE_NGINX
 	elseif getEnv ~= nil then
 		local env = getEnv()
