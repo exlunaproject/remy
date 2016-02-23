@@ -2,7 +2,9 @@
 -- Copyright (c) 2014 Felipe Daragon
 -- License: MIT
 
-require "base64"
+local base64 = require "base64"
+local cgilua = require "cgilua"
+local remy = require "remy"
 
 -- TODO: implement all functions from mod_lua's request_rec
 local request = {

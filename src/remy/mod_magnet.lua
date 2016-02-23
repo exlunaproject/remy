@@ -2,7 +2,8 @@
 -- Copyright (c) 2015 Felipe Daragon
 -- License: MIT
 
-require "base64"
+local base64 = require "base64"
+local remy = require "remy"
 
 local utils = {}
 
@@ -50,7 +51,7 @@ function M.init()
 	r.args = lighty.env["uri.query"]
 	--r.args = remy.splitstring(lighty.env['request.uri'],'?')
 	r.banner = M.mode
-  r.basic_auth_pw = pass
+	r.basic_auth_pw = pass
 	r.canonical_filename = filename
 	r.context_document_root = lighty.env["physical.doc-root"]
 	r.document_root = lighty.env["physical.doc-root"]
