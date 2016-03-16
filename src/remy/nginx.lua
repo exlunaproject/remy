@@ -4,6 +4,13 @@
 
 local ngx = require "ngx"
 local remy = require "remy"
+local output_buffer = {}
+
+-- Buffer output to allow changing the header up until M.finish is called
+-- See https://github.com/openresty/lua-nginx-module#ngxheaderheader
+local function buffered_print(_, ...)
+	table.insert(output_buffer, {...})
+end
 
 -- TODO: implement all functions from mod_lua's request_rec
 local request = {
@@ -18,8 +25,8 @@ local request = {
 	parsebody = function(_) return ngx.req.get_post_args(), {} end,
 	requestbody = function(_,...) return ngx.req.get_body_data() end,
 	-- REQUEST RESPONSE FUNCTIONS
-	puts = function(_,...) ngx.print(...) end,
-	write = function(_,...) ngx.print(...) end
+	puts = buffered_print,
+	write = buffered_print
 }
 
 local M = {
@@ -64,9 +71,18 @@ function M.contentheader(content_type)
 end
 
 function M.finish(code)
-	if request.content_type ~= nil and ngx.header.content_type == nil then
-		ngx.header.content_type = request.content_type
+	-- Set the headers
+	if request.content_type and not ngx.header.content_type then
+		ngx.header["Content-Type"] = request.content_type
 	end
+	for k, v in pairs(request.headers_out) do
+		ngx.header[k] = v
+	end
+
+	-- Print the data & Clear the buffer
+	ngx.print(output_buffer)
+	output_buffer = {}
+
 	-- TODO: translate request_rec's exit code and call ngx.exit(code)
 end
 
