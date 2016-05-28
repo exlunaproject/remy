@@ -22,5 +22,6 @@ build = {
       ['remy.nginx'] = "src/remy/nginx.lua",
       ['remy.lwan'] = "src/remy/lwan.lua",
       ['remy.nginx'] = "src/remy/nginx.lua",
+      ['remy.file_obj'] = "src/remy/nginx.lua",
    }
 }
