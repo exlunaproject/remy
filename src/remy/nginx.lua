@@ -181,6 +181,9 @@ function M.contentheader(content_type)
 end
 
 function M.finish(code)
+	-- Set status code
+	ngx.status = code
+
 	-- Set the headers
 	if request.content_type and not ngx.header.content_type then
 		ngx.header["Content-Type"] = request.content_type
