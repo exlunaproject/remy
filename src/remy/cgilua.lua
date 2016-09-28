@@ -99,20 +99,32 @@ function M.finish(code)
 	
 	-- Handle page redirect
 	local location = r.headers_out['Location']
-  if location ~= nil and r.status == 302 then
-     if location:match('^https?://') then
-				cgilua.redirect(location)
-     else
-        -- CGILua needs a full URL
-        if r.is_https then
-					location = 'https://'..cgilua.servervariable("HTTP_HOST")..location
-        else
-					location = 'http://'..cgilua.servervariable("HTTP_HOST")..location
-        end
-				cgilua.redirect(location)
-     end
-  end
-	
+	if location ~= nil and r.status == 302 then
+		if location:match('^https?://') then
+			cgilua.redirect(location)
+		else
+			-- CGILua needs a full URL
+			if r.is_https then
+				location = 'https://'..cgilua.servervariable("HTTP_HOST")..location
+			else
+				location = 'http://'..cgilua.servervariable("HTTP_HOST")..location
+			end
+		cgilua.redirect(location)
+		end
+	end
+
+	-- add support for custom headers 
+	for header, value in pairs(r.headers_out) do
+		-- skip Location header. 
+		if header == "Location" then
+			goto continue
+		end
+
+		cgilua.header(header, value)
+
+		::continue::
+	end
+
 	-- Prints the response text (if any)
 	if r.content_type == "text/html" then
 		cgilua.htmlheader()
@@ -122,8 +134,9 @@ function M.finish(code)
 		local header_subtype = remy.splitstring(r.content_type,header_sep)[2]
 		cgilua.contentheader(header_type,header_subtype)
 	end
+
 	if remy.responsetext ~= nil then
-	   cgilua.print(remy.responsetext)
+		cgilua.print(remy.responsetext)
 	end
 end
 
