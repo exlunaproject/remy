@@ -96,14 +96,14 @@ end
 -- TODO: better handle the return code
 function M.finish(code)
 	local r = request
-
+	
 	-- Handle page redirect
 	local location = r.headers_out['Location']
 	if location ~= nil and r.status == 302 then
 		if location:match('^https?://') then
 			cgilua.redirect(location)
 		else
-	-- CGILua needs a full URL
+			-- CGILua needs a full URL
 			if r.is_https then
 				location = 'https://'..cgilua.servervariable("HTTP_HOST")..location
 			else
@@ -111,6 +111,18 @@ function M.finish(code)
 			end
 		cgilua.redirect(location)
 		end
+	end
+
+	-- add support for custom headers 
+	for header, value in pairs(r.headers_out) do
+		-- skip Location header. 
+		if header == "Location" then
+			goto continue
+		end
+
+		cgilua.header(header, value)
+
+		::continue::
 	end
 
 	-- Prints the response text (if any)
