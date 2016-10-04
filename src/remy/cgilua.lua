@@ -116,13 +116,9 @@ function M.finish(code)
 	-- add support for custom headers 
 	for header, value in pairs(r.headers_out) do
 		-- skip Location header. 
-		if header == "Location" then
-			goto continue
+		if not header == "Location" then
+			cgilua.header(header, value)
 		end
-
-		cgilua.header(header, value)
-
-		::continue::
 	end
 
 	-- Prints the response text (if any)
