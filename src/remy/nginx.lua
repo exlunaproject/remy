@@ -146,7 +146,7 @@ local M = {
 
 function M.init()
 	local r = request
-	local filename = ngx.var.request_filename
+	local filename = debug.getinfo(4).source
 	local uri = ngx.var.uri
 	apache2.version = M.mode.."/"..ngx.var.nginx_version
 	r = remy.loadrequestrec(r)
